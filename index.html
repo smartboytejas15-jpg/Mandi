@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KisanConnect — Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: #fafafa;
+      color: #262626;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px
+    }
+
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: #fff;
+      border: 1px solid #dbdbdb;
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .logo {
+      font-family: 'Pacifico', cursive;
+      font-size: 36px;
+      text-align: center;
+      margin-bottom: 18px
+    }
+
+    .sub {
+      color: #8e8e8e;
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 18px
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 4px;
+      border: 1px solid #dbdbdb;
+      background: #fafafa;
+      font-size: 14px
+    }
+
+    .btn {
+      padding: 10px 12px;
+      border-radius: 4px;
+      border: 0;
+      background: #3897f0;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px
+    }
+
+    .or {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 10px 0;
+      color: #8e8e8e;
+      font-size: 13px
+    }
+
+    .or::before,
+    .or::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #dbdbdb
+    }
+
+    .fb {
+      color: #385185;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 5px
+    }
+
+    .small {
+      font-size: 13px;
+      color: #8e8e8e;
+      text-align: center;
+      margin-top: 12px
+    }
+
+    .signup {
+      text-align: center;
+      margin-top: 12px
+    }
+
+    .error {
+      color: #e74c3c;
+      font-size: 13px;
+      text-align: center;
+      margin-bottom: 8px
+    }
+
+    .hidden {
+      display: none
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN CARD -->
+  <div class="card" id="loginCard">
+    <div class="logo">KisanConnect</div>
+    <div class="sub">Login to manage your mandi rates and listings</div>
+
+    <div id="error" class="error hidden"></div>
+
+    <form id="authForm">
+      <input id="email" type="email" placeholder="Email" required />
+      <input id="password" type="password" placeholder="Password" required />
+      <button id="loginBtn" class="btn">Log In</button>
+    </form>
+
+    <div class="or"><span>OR</span></div>
+
+    <div id="googleBtn" class="fb">Continue with Google</div>
+    <div id="phoneBtn" class="fb">Login with Phone</div>
+
+    <div class="small">Forgot password? <a href="#" id="forgot">Reset</a></div>
+
+    <div class="signup">
+      <span class="small">Don't have an account? <a href="#" id="showSignup">Sign up</a></span>
+    </div>
+  </div>
+
+  <!-- SIGNUP CARD -->
+  <div id="signupCard" class="card hidden">
+    <div style="text-align:center;font-weight:600;margin-bottom:10px">Create account</div>
+
+    <div id="sError" class="error hidden"></div>
+
+    <form id="signupForm">
+      <input id="sname" type="text" placeholder="Full name" required />
+      <input id="semail" type="email" placeholder="Email" required />
+      <input id="spassword" type="password" placeholder="Password (6+ chars)" required />
+      <button id="signupBtn" class="btn">Sign up</button>
+    </form>
+
+    <div class="small">By signing up you agree to our terms.</div>
+    <div style="text-align:center;margin-top:8px"><a href="#" id="backToLogin">Back to login</a></div>
+  </div>
+
+  <!-- OTP BOX -->
+  <div id="otpBox" class="card hidden">
+    <div class="sub">Enter OTP</div>
+    <input id="otpInput" placeholder="Enter OTP" />
+    <button id="verifyOtp" class="btn">Verify OTP</button>
+    <div id="otpError" class="error hidden"></div>
+  </div>
+
+  <!-- Firebase Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      GoogleAuthProvider,
+      signInWithPopup,
+      RecaptchaVerifier,
+      signInWithPhoneNumber,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCNTk8Albrx2RgaBuQ45GNDEiOSDIwSZX4",
+      authDomain: "kisan-922e0.firebaseapp.com",
+      projectId: "kisan-922e0",
+      storageBucket: "kisan-922e0.firebasestorage.app",
+      messagingSenderId: "445867146442",
+      appId: "1:445867146442:web:5ebb15443157b09f370833"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const $ = id => document.getElementById(id);
+
+    // Error function
+    function showError(msg, el = "error") {
+      const e = $(el);
+      e.textContent = msg;
+      e.classList.remove("hidden");
+      setTimeout(() => e.classList.add("hidden"), 3000);
+    }
+
+    // --------------------
+    // EMAIL LOGIN
+    // --------------------
+    $('authForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await signInWithEmailAndPassword(auth, $('email').value, $('password').value);
+        alert("Login Successful!");
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    // --------------------
+    // SIGN UP
+    // --------------------
+    $('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await createUserWithEmailAndPassword(auth, $('semail').value, $('spassword').value);
+        await updateProfile(res.user, { displayName: $('sname').value });
+        alert("Signup Successful!");
+      } catch (err) {
+        showError(err.message, 'sError');
+      }
+    });
+
+    $('showSignup').addEventListener('click', () => {
+      $('signupCard').classList.remove("hidden");
+      $('loginCard').classList.add("hidden");
+    });
+
+    $('backToLogin').addEventListener('click', () => {
+      $('signupCard').classList.add("hidden");
+      $('loginCard').classList.remove("hidden");
+    });
+
+    // --------------------
+    // GOOGLE LOGIN
+    // --------------------
+    $('googleBtn').addEventListener('click', async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        alert("Login Successful!");
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    // --------------------
+    // PHONE LOGIN + OTP UI
+    // --------------------
+
+    let confirmationResult = null;
+
+    window.recaptcha = new RecaptchaVerifier(auth, 'phoneBtn', {
+      size: "invisible"
+    });
+
+    $('phoneBtn').addEventListener('click', async () => {
+      const number = prompt("Enter phone number with +91");
+      if (!number) return;
+
+      try {
+        confirmationResult = await signInWithPhoneNumber(auth, number, window.recaptcha);
+
+        $('loginCard').classList.add("hidden");
+        $('otpBox').classList.remove("hidden");
+
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    $('verifyOtp').addEventListener('click', async () => {
+      try {
+        await confirmationResult.confirm($('otpInput').value);
+        alert("Login Successful!");
+      } catch (err) {
+        showError(err.message, 'otpError');
+      }
+    });
+
+    // --------------------
+    // FORGOT PASSWORD
+    // --------------------
+    $('forgot').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = prompt("Enter your email");
+      if (!email) return;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert("Password reset email sent!");
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+  </script>
+
+</body>
+
+</html>
