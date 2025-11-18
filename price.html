@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mandi Rate — Prices</title>
+
+<!-- Chart.js used by chart.html only -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --green:#219a52;
+  --bg:#f6f8fa;
+  --card:#fff;
+  --muted:#6b6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Poppins",system-ui,Arial;background:var(--bg);color:#111}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card);box-shadow:0 2px 10px rgba(0,0,0,0.06);position:sticky;top:0;z-index:30}
+.left{display:flex;align-items:center;gap:12px}
+.logo-img{width:40px;height:40px;border-radius:8px;object-fit:cover}
+.app-title{font-weight:700;color:var(--green);font-size:20px}
+.right-icons{display:flex;gap:12px;align-items:center;font-size:22px;color:#333}
+
+/* Search */
+.container{padding:14px;padding-bottom:120px}
+.search-row{display:flex;gap:10px;margin-bottom:12px}
+.search-row input{flex:1;padding:12px;border-radius:12px;border:1px solid #eee;background:var(--card);outline:none;box-shadow:0 3px 10px rgba(0,0,0,0.03)}
+
+/* Table card */
+.card{background:var(--card);border-radius:12px;padding:10px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+.header-row{display:flex;gap:12px;padding:12px 6px;border-bottom:2px solid #eee;font-weight:700}
+.col-img{width:80px}
+.col-name{flex:1}
+.col-price{width:120px;text-align:right}
+
+/* item row */
+.item-row{display:flex;align-items:center;gap:12px;padding:12px 6px;border-bottom:1px solid #f0f0f0}
+.item-row img{width:72px;height:72px;border-radius:10px;object-fit:cover}
+.item-name{font-weight:600}
+.item-price{color:var(--green);font-weight:700;text-align:right}
+.view-chart{display:block;text-align:center;color:var(--muted);margin-top:8px;text-decoration:none;font-size:13px}
+.view-chart:hover{color:var(--green)}
+
+/* Sidebar (states) */
+.drawer{position:fixed;left:-320px;top:0;height:100%;width:280px;background:var(--card);box-shadow:6px 0 30px rgba(0,0,0,0.12);padding:16px;z-index:60;overflow:auto;transition:left .28s}
+.drawer.open{left:0}
+.state-btn{padding:10px;border-radius:8px;margin-bottom:8px;background:#fafafa;cursor:pointer}
+.state-btn.active{background:linear-gradient(90deg,#e9f7ee,#f0fff4);border-left:4px solid var(--green)}
+
+/* bottom space */
+.footer-space{height:120px}
+
+/* responsive */
+@media(max-width:520px){
+  .col-img{width:68px}
+  .item-row img{width:64px;height:64px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="left">
+    <img class="logo-img" src="https://i.imgur.com/0Z8FQpO.png" alt="logo">
+    <div class="app-title">Mandi Rate</div>
+  </div>
+  <div class="right-icons">
+    <span id="focusSearch" title="Search" style="cursor:pointer">🔍</span>
+    <span id="openDrawer" title="Select State" style="cursor:pointer">☰</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+  <div class="search-row">
+    <input id="searchInput" placeholder="Search vegetable name (e.g. Cabbage, Onion...)" />
+  </div>
+
+  <div class="card">
+    <div class="header-row">
+      <div class="col-img">VEGI</div>
+      <div class="col-name">NAME</div>
+      <div class="col-price">PRICE</div>
+    </div>
+
+    <div id="itemsContainer"></div>
+  </div>
+
+  <div class="footer-space"></div>
+</div>
+
+<!-- STATE DRAWER -->
+<div id="drawer" class="drawer" aria-hidden="true">
+  <h3 style="margin-top:6px;margin-bottom:12px">Select State</h3>
+  <div id="statesList"></div>
+</div>
+
+<script>
+/* -----------------------
+  Setup: vegetables and states
+------------------------*/
+const vegMeta = [
+  { key:'cabbage', name:'Cabbage', img:'https://i.imgur.com/4qv1gYs.jpeg' },
+  { key:'tomato', name:'Tomato', img:'https://i.imgur.com/0bZ9l6T.jpeg' },
+  { key:'potato', name:'Potato', img:'https://i.imgur.com/5h4czE2.jpeg' },
+  { key:'onion', name:'Onion', img:'https://i.imgur.com/BVO9Oa3.jpeg' },
+  { key:'carrot', name:'Carrot', img:'https://i.imgur.com/2B9ju1p.jpeg' },
+  { key:'brinjal', name:'Brinjal', img:'https://i.imgur.com/WXthHJ4.png' },
+  { key:'beans', name:'Green Beans', img:'https://i.imgur.com/9Qx4k2G.jpeg' },
+  { key:'capsicum', name:'Capsicum', img:'https://i.imgur.com/0nR3N4N.jpeg' }
+];
+
+/* Indian states list (short but broad sample) */
+const states = [
+  "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat",
+  "Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh",
+  "Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab",
+  "Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Delhi"
+];
+
+/* Generate state-wise data with price and history (7 days) */
+/* If you want fixed data, replace random generation with fixed numbers */
+function generateStatesData(){
+  const out = {};
+  for(const s of states){
+    out[s] = {};
+    for(const v of vegMeta){
+      const base = Math.round(15 + Math.random()*40); // base price
+      const history = [];
+      let p = base - Math.round(Math.random()*4);
+      for(let i=0;i<7;i++){
+        // small fluctuation
+        p = Math.max(8, Math.round(p + (Math.random()*6 - 3)));
+        history.push(p);
+      }
+      const today = history[history.length-1];
+      out[s][v.key] = { price: today, history };
+    }
+  }
+  return out;
+}
+
+/* store/generate once and save to localStorage for chart page access */
+let statesData = localStorage.getItem('statesData');
+if(!statesData){
+  statesData = generateStatesData();
+  localStorage.setItem('statesData', JSON.stringify(statesData));
+} else {
+  statesData = JSON.parse(statesData);
+}
+
+/* persist selected state */
+let selectedState = localStorage.getItem('selectedState') || states[0];
+
+/* -----------------------
+  Render states drawer
+------------------------*/
+const statesListEl = document.getElementById('statesList');
+function renderStates(){
+  statesListEl.innerHTML = '';
+  for(const s of states){
+    const div = document.createElement('div');
+    div.className = 'state-btn' + (s===selectedState ? ' active' : '');
+    div.textContent = s;
+    div.onclick = () => {
+      selectedState = s;
+      localStorage.setItem('selectedState', selectedState);
+      renderStates();
+      renderItems();          // update prices for chosen state
+      closeDrawer();          // close drawer automatically
+    };
+    statesListEl.appendChild(div);
+  }
+}
+renderStates();
+
+/* -----------------------
+  Render items table
+------------------------*/
+const itemsContainer = document.getElementById('itemsContainer');
+function renderItems(filter=''){
+  itemsContainer.innerHTML = '';
+  const data = statesData[selectedState];
+  // iterate vegMeta order
+  for(const v of vegMeta){
+    const key = v.key;
+    const name = v.name;
+    if(filter && !name.toLowerCase().includes(filter.toLowerCase())) continue;
+    const price = data[key].price;
+    // row
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML = `
+      <img src="${v.img}" alt="${name}">
+      <div style="flex:1">
+        <div class="item-name">${name}</div>
+        <a href="#" class="view-chart" data-key="${key}" data-name="${name}">View in chart &nbsp; →</a>
+      </div>
+      <div style="width:120px;text-align:right">
+        <div class="item-price">₹ ${price} / kg</div>
+      </div>
+    `;
+    itemsContainer.appendChild(row);
+  }
+  // attach click listeners to view-chart links
+  document.querySelectorAll('.view-chart').forEach(a=>{
+    a.onclick = (e) => {
+      e.preventDefault();
+      const key = a.dataset.key;
+      const name = a.dataset.name;
+      openChartPage(key, name);
+    };
+  });
+}
+renderItems();
+
+/* -----------------------
+  Search & focus
+------------------------*/
+document.getElementById('focusSearch').addEventListener('click', ()=> {
+  document.getElementById('searchInput').focus();
+});
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  renderItems(e.target.value);
+});
+
+/* -----------------------
+  Drawer open/close
+------------------------*/
+const drawer = document.getElementById('drawer');
+document.getElementById('openDrawer').addEventListener('click', ()=> {
+  drawer.classList.add('open');
+});
+function closeDrawer(){
+  drawer.classList.remove('open');
+}
+/* click outside to close */
+document.addEventListener('click', (ev)=>{
+  if(!ev.target.closest('#drawer') && !ev.target.closest('#openDrawer')) {
+    closeDrawer();
+  }
+});
+
+/* -----------------------
+  Open chart page
+  We'll navigate to chart.html with query params
+------------------------*/
+function openChartPage(vegKey, vegName){
+  // ensure latest data is in localStorage
+  localStorage.setItem('statesData', JSON.stringify(statesData));
+  localStorage.setItem('selectedState', selectedState);
+  // open chart page with params
+  const url = `chart.html?veg=${encodeURIComponent(vegKey)}&name=${encodeURIComponent(vegName)}`;
+  window.location.href = url;
+}
+
+/* -----------------------
+  On load, show selected state prices
+------------------------*/
+renderItems();
+
+/* Ensure selected state persists visually in drawer */
+renderStates();
+</script>
+</body>
+</html>
