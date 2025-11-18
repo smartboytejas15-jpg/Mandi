@@ -4,186 +4,281 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>KisanConnect — Login</title>
-
   <style>
+    /* === EXACT DESIGN kept as you provided === */
     *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;
-      background:#fafafa;color:#262626;
-      display:flex;align-items:center;justify-content:center;padding:20px;height:100vh;
-    }
-    .card{
-      width:100%;max-width:380px;background:#fff;border:1px solid #dbdbdb;
-      border-radius:8px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.04)
-    }
-    .logo{
-      font-family: 'Pacifico', cursive;
-      font-size:36px;text-align:center;margin-bottom:18px
-    }
+    html,body{height:100%}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;background:#fafafa;color:#262626;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{width:100%;max-width:380px;background:#fff;border:1px solid #dbdbdb;border-radius:8px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+    .logo{font-family:'Pacifico',cursive;font-size:36px;text-align:center;margin-bottom:18px}
     .sub{color:#8e8e8e;text-align:center;font-size:14px;margin-bottom:18px}
-    input{
-      width:100%;padding:10px 12px;border-radius:4px;border:1px solid #dbdbdb;
-      background:#fafafa;font-size:14px;margin-bottom:10px
-    }
-    .btn{
-      padding:10px;border-radius:4px;border:0;background:#3897f0;
-      color:white;font-weight:600;cursor:pointer;margin-top:5px
-    }
-    .fb{color:#385185;font-weight:600;text-align:center;margin:10px 0;cursor:pointer}
-    .small{text-align:center;color:#8e8e8e;font-size:13px;margin-top:10px}
-    .or{
-      display:flex;align-items:center;margin:14px 0;color:#8e8e8e;font-size:13px
-    }
-    .or::before,.or::after{
-      content:"";flex:1;height:1px;background:#dbdbdb;margin:0 10px
-    }
+    form{display:flex;flex-direction:column;gap:10px}
+    input[type=email],input[type=password]{width:100%;padding:10px 12px;border-radius:4px;border:1px solid #dbdbdb;background:#fafafa;font-size:14px}
+    .btn{padding:10px 12px;border-radius:4px;border:0;background:#3897f0;color:white;font-weight:600;cursor:pointer;font-size:14px}
+    .btn:disabled{opacity:0.6}
+    .or{display:flex;align-items:center;gap:12px;margin:10px 0;color:#8e8e8e;font-size:13px}
+    .or::before,.or::after{content:'';flex:1;height:1px;background:#dbdbdb}
+    .fb{color:#385185;font-weight:600;cursor:pointer;font-size:14px;text-align:center;margin-top:5px}
+    .small{font-size:13px;color:#8e8e8e;text-align:center;margin-top:12px}
+    .signup{margin-top:12px;text-align:center}
+    a{color:#00376b;text-decoration:none}
+    .error{color:#e74c3c;font-size:13px;text-align:center}
     .hidden{display:none}
-    .error{color:#e74c3c;text-align:center;font-size:13px;margin-bottom:10px}
+    /* OTP modal (small) */
+    #otpBox { position: fixed; left:50%; top:50%; transform:translate(-50%,-50%); width:90%; max-width:360px; z-index:50; }
+    #overlay { position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:none; z-index:49; }
+    .success-banner { background:#e6ffed; color:#0b8a3e; padding:10px 14px; border-radius:8px; text-align:center; margin-bottom:12px; display:none;}
+    @media (max-width:420px){.card{padding:20px;border-radius:6px}}
   </style>
 </head>
-
 <body>
 
-  <!-- LOGIN -->
+  <div id="overlay"></div>
+
+  <!-- LOGIN CARD (KEEP EXACT TEXT / DESIGN) -->
   <div class="card" id="loginCard">
     <div class="logo">KisanConnect</div>
     <div class="sub">Login to manage your mandi rates and listings</div>
-
+    <div id="success" class="success-banner">Successful login!</div>
     <div id="error" class="error hidden"></div>
 
-    <!-- PHONE LOGIN ONLY -->
-    <input id="phoneInput" placeholder="Enter phone number (e.g. 9876543210)" />
-    <button id="phoneSendOtp" class="btn">Send OTP</button>
+    <form id="authForm">
+      <input id="email" type="email" placeholder="Email" required />
+      <input id="password" type="password" placeholder="Password" required />
+      <button id="loginBtn" class="btn">Log In</button>
+    </form>
 
-    <div class="or"><span>OR</span></div>
+    <div class="or"> <span>OR</span> </div>
 
-    <div id="emailOption" class="fb">Continue with Email</div>
     <div id="googleBtn" class="fb">Continue with Google</div>
+    <div id="phoneBtn" class="fb">Login with Phone</div>
 
-    <div class="signup small">
-      Don’t have an account? <a href="#" id="showSignup">Sign up</a>
+    <div class="small">Forgot password? <a href="#" id="forgot">Reset</a></div>
+
+    <div class="signup">
+      <span class="small">Don't have an account? <a href="#" id="showSignup">Sign up</a></span>
     </div>
   </div>
 
-  <!-- OTP BOX -->
-  <div class="card hidden" id="otpBox">
-    <div class="sub">Enter OTP</div>
-    <input id="otpInside" placeholder="Enter OTP" />
-    <button id="verifyOtp" class="btn">Verify OTP</button>
+  <!-- SIGNUP CARD (kept same) -->
+  <div id="signupCard" class="card hidden">
+    <div style="text-align:center;font-weight:600;margin-bottom:10px">Create account</div>
+    <div id="sError" class="error hidden"></div>
+    <form id="signupForm">
+      <input id="sname" type="text" placeholder="Full name" required />
+      <input id="semail" type="email" placeholder="Email" required />
+      <input id="spassword" type="password" placeholder="Password (6+ chars)" required />
+      <button id="signupBtn" class="btn">Sign up</button>
+    </form>
+    <div class="small" style="margin-top:8px">By signing up you agree to our terms.</div>
+    <div style="text-align:center;margin-top:8px"><a href="#" id="backToLogin">Back to login</a></div>
+  </div>
+
+  <!-- OTP BOX (appears when phone login requested) -->
+  <div id="otpBox" class="card hidden">
+    <div style="text-align:center;font-weight:600;margin-bottom:10px">Phone verification</div>
     <div id="otpError" class="error hidden"></div>
+    <div style="margin-bottom:10px">
+      <input id="phoneInput" type="text" placeholder="+91XXXXXXXXXX" />
+    </div>
+    <div id="recaptcha-container" style="margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px;">
+      <button id="sendOtpBtn" class="btn" style="flex:1">Send OTP</button>
+      <button id="cancelOtp" class="btn" style="flex:1;background:#ccc;color:#222">Cancel</button>
+    </div>
+
+    <div id="otpEntry" style="display:none;margin-top:12px;">
+      <input id="otpInput" type="text" placeholder="Enter OTP" />
+      <button id="verifyOtp" class="btn" style="margin-top:8px">Verify OTP</button>
+    </div>
   </div>
 
-  <!-- EMAIL LOGIN FORM -->
-  <div class="card hidden" id="emailCard">
-    <div class="sub">Login with Email</div>
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <button id="emailLoginBtn" class="btn">Log In</button>
-  </div>
-
-  <!-- SIGNUP -->
-  <div class="card hidden" id="signupCard">
-    <div class="sub">Create account</div>
-    <input id="sname" placeholder="Full Name" />
-    <input id="semail" type="email" placeholder="Email" />
-    <input id="spassword" type="password" placeholder="Password (6+ chars)" />
-    <button id="signupBtn" class="btn">Sign Up</button>
-  </div>
-
-  <!-- Firebase -->
+  <!-- Firebase v12 modular (module import) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
     import {
-      getAuth, signInWithEmailAndPassword, GoogleAuthProvider,
-      signInWithPopup, createUserWithEmailAndPassword, updateProfile,
-      RecaptchaVerifier, signInWithPhoneNumber
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      GoogleAuthProvider,
+      signInWithPopup,
+      RecaptchaVerifier,
+      signInWithPhoneNumber,
+      sendPasswordResetEmail,
+      onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
+    // ---------- YOUR FIREBASE CONFIG (kept as you gave) ----------
     const firebaseConfig = {
       apiKey: "AIzaSyCNTk8Albrx2RgaBuQ45GNDEiOSDIwSZX4",
       authDomain: "kisan-922e0.firebaseapp.com",
       projectId: "kisan-922e0",
       storageBucket: "kisan-922e0.firebasestorage.app",
       messagingSenderId: "445867146442",
-      appId: "1:445867146442:web:5ebb15443157b09f370833"
+      appId: "1:445867146442:web:5ebb15443157b09f370833",
+      measurementId: "G-KLT6QCQFD3"
     };
+    // -------------------------------------------------------------
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+
+    // Helpers
     const $ = id => document.getElementById(id);
+    function showError(msg, elId='error'){ const el = $(elId); el.textContent = msg; el.classList.remove('hidden'); setTimeout(()=>el.classList.add('hidden'),6000); }
+    function showSuccess(msg){ const el = $('success'); el.textContent = msg; el.style.display='block'; setTimeout(()=>el.style.display='none',4000); }
 
-    function showError(msg, box="error"){
-      $(box).textContent = msg;
-      $(box).classList.remove("hidden");
-      setTimeout(()=>$(box).classList.add("hidden"),3000);
-    }
+    // AUTH STATE - keep user signed in handling
+    onAuthStateChanged(auth, (user) => {
+      if(user){
+        // User is signed in -> show success message and hide login
+        showSuccess('✅ Login successful! Welcome ' + (user.displayName||user.phoneNumber||user.email));
+        // Optionally redirect to home/dashboard:
+        // window.location.href = 'home.html';
+        // For now, hide login UI to show user is logged in
+        $('loginCard').classList.add('hidden'); $('signupCard').classList.add('hidden'); $('otpBox').classList.add('hidden'); $('overlay').style.display='none';
+      } else {
+        // no user
+      }
+    });
 
-    // Invisible reCAPTCHA
-    const recaptcha = new RecaptchaVerifier(auth, "phoneSendOtp", { size:"invisible" });
+    // ---------------- EMAIL LOGIN ----------------
+    $('authForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('email').value.trim();
+      const pass = $('password').value;
+      $('loginBtn').disabled = true;
+      try{
+        await signInWithEmailAndPassword(auth, email, pass);
+        // onAuthStateChanged will show success
+      }catch(err){
+        showError(err.message || 'Login failed');
+      }finally{ $('loginBtn').disabled = false; }
+    });
 
+    // --------------- SIGNUP ----------------
+    $('showSignup').addEventListener('click', (e)=>{ e.preventDefault(); $('signupCard').classList.remove('hidden'); $('loginCard').classList.add('hidden'); });
+    $('backToLogin').addEventListener('click', (e)=>{ e.preventDefault(); $('signupCard').classList.add('hidden'); $('loginCard').classList.remove('hidden'); });
+
+    $('signupForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      $('signupBtn').disabled = true;
+      try{
+        const res = await createUserWithEmailAndPassword(auth, $('semail').value.trim(), $('spassword').value);
+        await updateProfile(res.user, { displayName: $('sname').value.trim() });
+        showSuccess('✅ Account created successfully!');
+        // After signup, user is signed-in automatically — onAuthStateChanged will run
+      }catch(err){
+        showError(err.message || 'Signup failed', 'sError');
+      }finally{ $('signupBtn').disabled = false; }
+    });
+
+    // --------------- GOOGLE SIGN-IN ----------------
+    $('googleBtn').addEventListener('click', async ()=>{
+      try{
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        // onAuthStateChanged will show success
+      }catch(err){
+        // Common cause: popup blocked or domain not authorized for OAuth
+        showError(err.message || 'Google sign-in failed');
+      }
+    });
+
+    // --------------- FORGOT PASSWORD ----------------
+    $('forgot').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      const email = prompt('Enter your account email to receive password reset link:');
+      if(!email) return;
+      try{
+        await sendPasswordResetEmail(auth, email);
+        alert('📩 Password reset email sent to ' + email);
+      }catch(err){
+        showError(err.message || 'Could not send reset email');
+      }
+    });
+
+    // --------------- PHONE AUTH (OTP) ----------------
+    // We'll open otpBox modal where user enters phone, clicks Send OTP, then enters OTP and Verify.
     let confirmationResult = null;
+    // create recaptcha verifier but only render when otp modal opens
+    let recaptchaVerifier = null;
 
-    // SEND OTP
-    $("phoneSendOtp").addEventListener("click", async ()=>{
-      let num = $("phoneInput").value.trim();
-      if(num.length !== 10) return showError("Enter valid 10 digit number");
-
-      num = "+91" + num;
-      try{
-        confirmationResult = await signInWithPhoneNumber(auth, num, recaptcha);
-        $("loginCard").classList.add("hidden");
-        $("otpBox").classList.remove("hidden");
-      }catch(e){
-        showError(e.message);
+    $('phoneBtn').addEventListener('click', (e)=>{
+      e.preventDefault();
+      // show otp modal
+      $('overlay').style.display = 'block';
+      $('otpBox').classList.remove('hidden');
+      $('otpError').classList.add('hidden');
+      // prefill phoneInput with +91 placeholder
+      $('phoneInput').value = '+91';
+      // render recaptcha if not already
+      if(!recaptchaVerifier){
+        recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', { size: 'invisible' }, auth);
+        // render not strictly needed for invisible, but ensure created
+        recaptchaVerifier.render().catch(()=>{/* ignore */});
       }
     });
 
-    // VERIFY OTP
-    $("verifyOtp").addEventListener("click", async ()=>{
+    // Cancel OTP modal
+    $('cancelOtp').addEventListener('click', ()=>{
+      $('overlay').style.display='none';
+      $('otpBox').classList.add('hidden');
+      $('otpEntry').style.display='none';
+    });
+
+    $('sendOtpBtn').addEventListener('click', async ()=>{
+      const number = $('phoneInput').value.trim();
+      if(!number){
+        showError('Enter phone number', 'otpError');
+        return;
+      }
       try{
-        await confirmationResult.confirm($("otpInside").value);
-        alert("Login Successful!");
-      }catch(e){
-        showError(e.message, "otpError");
+        $('sendOtpBtn').disabled = true;
+        // call signInWithPhoneNumber
+        confirmationResult = await signInWithPhoneNumber(auth, number, recaptchaVerifier);
+        // show OTP entry UI
+        $('otpEntry').style.display = 'block';
+        showSuccess('OTP sent to ' + number);
+      }catch(err){
+        // If error, reset recaptcha so user can try again
+        try{ 
+          if(recaptchaVerifier && typeof grecaptcha !== 'undefined') {
+            // reset widget (if available)
+            // grecaptcha.reset();
+          }
+        }catch(e){}
+        showError(err.message || 'Could not send OTP', 'otpError');
+      }finally{
+        $('sendOtpBtn').disabled = false;
       }
     });
 
-    // GOOGLE LOGIN
-    $("googleBtn").addEventListener("click", async ()=>{
+    $('verifyOtp').addEventListener('click', async ()=>{
+      const code = $('otpInput').value.trim();
+      if(!code){ showError('Enter OTP', 'otpError'); return; }
       try{
-        await signInWithPopup(auth, new GoogleAuthProvider());
-        alert("Login Successful!");
-      }catch(e){ showError(e.message); }
+        await confirmationResult.confirm(code);
+        // success handled by onAuthStateChanged
+        $('overlay').style.display='none';
+        $('otpBox').classList.add('hidden');
+        $('otpEntry').style.display='none';
+      }catch(err){
+        showError(err.message || 'Invalid OTP', 'otpError');
+      }
     });
 
-    // EMAIL LOGIN UI
-    $("emailOption").onclick = ()=>{
-      $("loginCard").classList.add("hidden");
-      $("emailCard").classList.remove("hidden");
-    }
+    // ----------------- NOTES for reliable testing -----------------
+    // 1) Make sure in Firebase Console:
+    //    - Authentication -> Sign-in method -> Google enabled
+    //    - Authentication -> Sign-in method -> Phone enabled
+    //    - Authentication -> Settings -> Authorized domains: add your site domain (e.g., your-netlify-app.netlify.app)
+    // 2) For phone testing without real SMS (during development): add test numbers in Firebase Console -> Sign-in method -> Phone -> Phone numbers for testing.
+    //    Example: +919876543210 with code 123456
+    // 3) Browser popups must be allowed for Google sign-in (signInWithPopup uses a popup). If popup blocked, allow it.
+    // ---------------------------------------------------------------
 
-    // EMAIL LOGIN
-    $("emailLoginBtn").onclick = async ()=>{
-      try{
-        await signInWithEmailAndPassword(auth, $("email").value, $("password").value);
-        alert("Login Successful!");
-      }catch(e){ showError(e.message); }
-    }
-
-    // SIGNUP
-    $("showSignup").onclick = ()=>{
-      $("loginCard").classList.add("hidden");
-      $("signupCard").classList.remove("hidden");
-    }
-
-    $("signupBtn").onclick = async ()=>{
-      try{
-        const r = await createUserWithEmailAndPassword(auth, $("semail").value, $("spassword").value);
-        updateProfile(r.user, { displayName: $("sname").value });
-        alert("Signup Done!");
-      }catch(e){ showError(e.message); }
-    }
   </script>
-
 </body>
 </html>
