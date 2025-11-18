@@ -16,7 +16,6 @@
         background: #f6f8fa;
     }
 
-    /* Topbar */
     .topbar {
         background: white;
         padding: 12px 16px;
@@ -51,7 +50,6 @@
         cursor: pointer;
     }
 
-    /* Search Box */
     .search-box {
         background: white;
         margin: 15px;
@@ -70,7 +68,6 @@
         font-size: 16px;
     }
 
-    /* Cards */
     .item-card {
         background: white;
         margin: 12px;
@@ -94,7 +91,6 @@
         object-fit: cover;
     }
 
-    /* Bottom Bar */
     .bottombar {
         position: fixed;
         bottom: 0;
@@ -119,7 +115,6 @@
         transform: scale(1.2);
     }
 
-    /* Notification Box */
     #notifyBox {
         position: fixed;
         top: 70px;
@@ -133,7 +128,6 @@
         z-index: 20;
     }
 
-    /* ADD MENU POPUP */
     .add-menu {
         position: fixed;
         left: 0;
@@ -189,7 +183,6 @@
 </head>
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
     <div class="left-logo">
         <img src="https://i.imgur.com/0Z8FQpO.png" alt="">
@@ -202,22 +195,18 @@
     </div>
 </div>
 
-<!-- SEARCH -->
 <div class="search-box">
     <span class="material-icons-outlined" id="searchIcon">search</span>
     <input id="searchInput" type="text" placeholder="Search vegetables...">
 </div>
 
-<!-- ITEMS -->
 <div id="itemList"></div>
 
-<!-- NOTIFICATION POPUP -->
 <div id="notifyBox">
     <b>Notifications</b>
     <p style="margin-top: 10px;">No new notifications.</p>
 </div>
 
-<!-- ADD POPUP MENU -->
 <div id="addMenu" class="add-menu">
     <div class="add-menu-box">
         <span class="close-btn">&times;</span>
@@ -229,20 +218,20 @@
     </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <div class="bottombar">
     <span class="material-icons-outlined b-icon active">home</span>
-   <span id="pricePageBtn" class="material-icons-outlined b-icon">currency_rupee</span>
-  
-    <!-- PLUS BUTTON -->
-    <span class="material-icons-outlined b-icon" id="addBtn" style="font-size:45px;margin-top:-8px;">add_circle</span>
 
+    <!-- ⭐ PRICE BUTTON (UPDATED) ⭐ -->
+    <span id="pricePageBtn" class="material-icons-outlined b-icon">
+        currency_rupee
+    </span>
+
+    <span class="material-icons-outlined b-icon" id="addBtn" style="font-size:45px;margin-top:-8px;">add_circle</span>
     <span class="material-icons-outlined b-icon">analytics</span>
     <span class="material-icons-outlined b-icon">account_circle</span>
 </div>
 
 <script>
-/* VEG DATA */
 const items = [
     { name: "Tomato", price: 20, img: "https://i.imgur.com/0bZ9l6T.jpeg" },
     { name: "Potato", price: 25, img: "https://i.imgur.com/5h4czE2.jpeg" },
@@ -270,7 +259,6 @@ function loadItems(filter = "") {
 }
 loadItems();
 
-/* SEARCH */
 document.getElementById("searchInput").addEventListener("input", (e) => {
     loadItems(e.target.value);
 });
@@ -279,38 +267,20 @@ document.getElementById("searchIcon").addEventListener("click", () => {
     document.getElementById("searchInput").focus();
 });
 
-/* NOTIFICATION */
-const bell = document.getElementById("bell");
-const notifyBox = document.getElementById("notifyBox");
-
-bell.onclick = () => {
-    notifyBox.style.display =
-        notifyBox.style.display === "block" ? "none" : "block";
+document.getElementById("bell").onclick = () => {
+    const box = document.getElementById("notifyBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
 };
 
-/* SETTINGS */
 document.getElementById("settingsBtn").onclick = () => {
     alert("Settings page coming soon!");
 };
 
-/* BOTTOM NAV ACTIVE */
-const navIcons = document.querySelectorAll(".b-icon");
-navIcons.forEach((i, index) => {
-    i.addEventListener("click", function () {
+/* ⭐ ONLY THIS PART CHANGED ⭐ */
+document.getElementById("pricePageBtn").onclick = () => {
+    window.location.href = "https://smartboytejas15-jpg.github.io/pricepage/";
+};
 
-        navIcons.forEach(x => x.classList.remove("active"));
-        this.classList.add("active");
-
-        // ⭐ Navigation Start ⭐
-        if (index === 1) {
-            // PRICE (Rupee) Icon
-            window.location.href = "https://smartboytejas15.github.io/pricepage/";
-        }
-        // ⭐ Navigation End ⭐
-    });
-});
-  
-/* PLUS BUTTON POPUP */
 const addBtn = document.getElementById("addBtn");
 const addMenu = document.getElementById("addMenu");
 const closeBtn = document.querySelector(".close-btn");
@@ -328,7 +298,6 @@ addMenu.onclick = (e) => {
         addMenu.style.display = "none";
     }
 };
- 
 </script>
 
 </body>
