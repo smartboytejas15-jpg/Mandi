@@ -1,106 +1,102 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>KisanConnect — Login</title>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0 }
-    html, body { height: 100% }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      background: #fafafa; color: #262626;
-      display: flex; align-items: center; justify-content: center; padding: 20px;
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+      background:#fafafa;color:#262626;
+      display:flex;align-items:center;justify-content:center;padding:20px;height:100vh;
     }
-    .card {
-      width: 100%; max-width: 380px; background: #fff;
-      border: 1px solid #dbdbdb; border-radius: 8px;
-      padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    .card{
+      width:100%;max-width:380px;background:#fff;border:1px solid #dbdbdb;
+      border-radius:8px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.04)
     }
-    .logo {
+    .logo{
       font-family: 'Pacifico', cursive;
-      font-size: 36px; text-align: center; margin-bottom: 18px;
+      font-size:36px;text-align:center;margin-bottom:18px
     }
-    .sub { color: #8e8e8e; text-align: center; font-size: 14px; margin-bottom: 18px }
-    input {
-      width: 100%; padding: 10px 12px;
-      border-radius: 4px; border: 1px solid #dbdbdb;
-      background: #fafafa; font-size: 14px;
+    .sub{color:#8e8e8e;text-align:center;font-size:14px;margin-bottom:18px}
+    input{
+      width:100%;padding:10px 12px;border-radius:4px;border:1px solid #dbdbdb;
+      background:#fafafa;font-size:14px;margin-bottom:10px
     }
-    .btn {
-      padding: 10px 12px; border-radius: 4px;
-      border: 0; background: #3897f0; color: white;
-      font-weight: 600; cursor: pointer; font-size: 14px;
+    .btn{
+      padding:10px;border-radius:4px;border:0;background:#3897f0;
+      color:white;font-weight:600;cursor:pointer;margin-top:5px
     }
-    .or { display: flex; align-items: center; gap: 12px; margin: 10px 0; color: #8e8e8e; font-size: 13px }
-    .or::before, .or::after { content:""; flex:1; height:1px; background:#dbdbdb }
-    .fb { color:#385185; font-weight:600; cursor:pointer; font-size:14px; text-align:center; margin-top:8px }
-    .small { font-size:13px; color:#8e8e8e; text-align:center; margin-top:12px }
-    .signup { text-align:center; margin-top:12px }
-    .error { color:#e74c3c; font-size:13px; text-align:center; margin-bottom:8px }
-    .hidden { display:none }
+    .fb{color:#385185;font-weight:600;text-align:center;margin:10px 0;cursor:pointer}
+    .small{text-align:center;color:#8e8e8e;font-size:13px;margin-top:10px}
+    .or{
+      display:flex;align-items:center;margin:14px 0;color:#8e8e8e;font-size:13px
+    }
+    .or::before,.or::after{
+      content:"";flex:1;height:1px;background:#dbdbdb;margin:0 10px
+    }
+    .hidden{display:none}
+    .error{color:#e74c3c;text-align:center;font-size:13px;margin-bottom:10px}
   </style>
 </head>
 
 <body>
 
-  <!-- LOGIN CARD -->
+  <!-- LOGIN -->
   <div class="card" id="loginCard">
     <div class="logo">KisanConnect</div>
     <div class="sub">Login to manage your mandi rates and listings</div>
 
     <div id="error" class="error hidden"></div>
 
-    <!-- PHONE LOGIN -->
-    <input id="phoneInput" type="number" placeholder="Mobile number (10 digits)" />
-    <button id="sendOtpBtn" class="btn">Send OTP</button>
+    <!-- PHONE LOGIN ONLY -->
+    <input id="phoneInput" placeholder="Enter phone number (e.g. 9876543210)" />
+    <button id="phoneSendOtp" class="btn">Send OTP</button>
 
     <div class="or"><span>OR</span></div>
 
-    <div id="emailLoginBtn" class="fb">Continue with Email</div>
+    <div id="emailOption" class="fb">Continue with Email</div>
     <div id="googleBtn" class="fb">Continue with Google</div>
 
-    <div class="signup">
-      <span class="small">Don't have an account? <a id="showSignup" href="#">Sign up</a></span>
+    <div class="signup small">
+      Don’t have an account? <a href="#" id="showSignup">Sign up</a>
     </div>
   </div>
 
   <!-- OTP BOX -->
-  <div id="otpBox" class="card hidden">
+  <div class="card hidden" id="otpBox">
     <div class="sub">Enter OTP</div>
-    <input id="otpInput" placeholder="Enter OTP" />
+    <input id="otpInside" placeholder="Enter OTP" />
     <button id="verifyOtp" class="btn">Verify OTP</button>
     <div id="otpError" class="error hidden"></div>
   </div>
 
-  <!-- EMAIL LOGIN -->
-  <div id="emailCard" class="card hidden">
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button id="emailLogin" class="btn">Login</button>
-    <div class="small"><a href="#" id="forgot">Forgot password?</a></div>
-    <div style="text-align:center;margin-top:8px"><a href="#" id="backToMain">Back</a></div>
+  <!-- EMAIL LOGIN FORM -->
+  <div class="card hidden" id="emailCard">
+    <div class="sub">Login with Email</div>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="emailLoginBtn" class="btn">Log In</button>
   </div>
 
-  <!-- SIGNUP CARD -->
-  <div id="signupCard" class="card hidden">
-    <input id="sname" placeholder="Full name">
-    <input id="semail" placeholder="Email">
-    <input id="spassword" placeholder="Password (6+ chars)">
-    <button id="signupBtn" class="btn">Sign up</button>
-    <div class="small">By signing up you agree to our terms.</div>
-    <div style="text-align:center;margin-top:8px"><a href="#" id="backToLogin">Back to login</a></div>
+  <!-- SIGNUP -->
+  <div class="card hidden" id="signupCard">
+    <div class="sub">Create account</div>
+    <input id="sname" placeholder="Full Name" />
+    <input id="semail" type="email" placeholder="Email" />
+    <input id="spassword" type="password" placeholder="Password (6+ chars)" />
+    <button id="signupBtn" class="btn">Sign Up</button>
   </div>
 
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
     import {
-      getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-      updateProfile, GoogleAuthProvider, signInWithPopup, RecaptchaVerifier,
-      signInWithPhoneNumber, sendPasswordResetEmail
+      getAuth, signInWithEmailAndPassword, GoogleAuthProvider,
+      signInWithPopup, createUserWithEmailAndPassword, updateProfile,
+      RecaptchaVerifier, signInWithPhoneNumber
     } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -116,94 +112,77 @@
     const auth = getAuth(app);
     const $ = id => document.getElementById(id);
 
-    function showError(msg, el="error") {
-      const e = $(el); e.textContent = msg;
-      e.classList.remove("hidden");
-      setTimeout(()=>e.classList.add("hidden"),3000);
+    function showError(msg, box="error"){
+      $(box).textContent = msg;
+      $(box).classList.remove("hidden");
+      setTimeout(()=>$(box).classList.add("hidden"),3000);
     }
 
-    // recaptcha
-    window.recaptchaVerifier = new RecaptchaVerifier(auth,"sendOtpBtn",{size:"invisible"});
+    // Invisible reCAPTCHA
+    const recaptcha = new RecaptchaVerifier(auth, "phoneSendOtp", { size:"invisible" });
 
     let confirmationResult = null;
 
-    // Send OTP
-    $("sendOtpBtn").addEventListener("click", async () => {
-      const num = $("phoneInput").value.trim();
+    // SEND OTP
+    $("phoneSendOtp").addEventListener("click", async ()=>{
+      let num = $("phoneInput").value.trim();
+      if(num.length !== 10) return showError("Enter valid 10 digit number");
 
-      if(num.length !== 10) return showError("Enter valid 10-digit number");
-
-      const fullNum = "+91" + num;
-
+      num = "+91" + num;
       try{
-        confirmationResult = await signInWithPhoneNumber(auth, fullNum, window.recaptchaVerifier);
+        confirmationResult = await signInWithPhoneNumber(auth, num, recaptcha);
         $("loginCard").classList.add("hidden");
         $("otpBox").classList.remove("hidden");
-      }catch(err){ showError(err.message); }
+      }catch(e){
+        showError(e.message);
+      }
     });
 
-    // Verify OTP
+    // VERIFY OTP
     $("verifyOtp").addEventListener("click", async ()=>{
       try{
-        await confirmationResult.confirm($("otpInput").value);
-        window.location.href = "home.html";
-      }catch(err){ showError(err.message,"otpError"); }
+        await confirmationResult.confirm($("otpInside").value);
+        alert("Login Successful!");
+      }catch(e){
+        showError(e.message, "otpError");
+      }
     });
 
-    // Email login
-    $("emailLoginBtn").addEventListener("click", ()=>{
-      $("loginCard").classList.add("hidden");
-      $("emailCard").classList.remove("hidden");
-    });
-
-    $("backToMain").addEventListener("click", ()=>{
-      $("emailCard").classList.add("hidden");
-      $("loginCard").classList.remove("hidden");
-    });
-
-    $("emailLogin").addEventListener("click", async()=>{
-      try{
-        await signInWithEmailAndPassword(auth,$("email").value,$("password").value);
-        window.location.href = "home.html";
-      }catch(err){ showError(err.message); }
-    });
-
-    // Signup
-    $("signupBtn").addEventListener("click", async ()=>{
-      try{
-        const r = await createUserWithEmailAndPassword(auth,$("semail").value,$("spassword").value);
-        await updateProfile(r.user,{displayName:$("sname").value});
-        alert("Signup Successful");
-      }catch(err){ showError(err.message); }
-    });
-
-    $("showSignup").addEventListener("click",()=>{
-      $("loginCard").classList.add("hidden");
-      $("signupCard").classList.remove("hidden");
-    });
-
-    $("backToLogin").addEventListener("click",()=>{
-      $("signupCard").classList.add("hidden");
-      $("loginCard").classList.remove("hidden");
-    });
-
-    // Forgot password
-    $("forgot").addEventListener("click", async ()=>{
-      const email = prompt("Enter your email");
-      if(!email) return;
-      await sendPasswordResetEmail(auth,email);
-      alert("Reset link sent!");
-    });
-
-    // Google Login
+    // GOOGLE LOGIN
     $("googleBtn").addEventListener("click", async ()=>{
       try{
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth,provider);
-        window.location.href = "home.html";
-      }catch(err){ showError(err.message); }
+        await signInWithPopup(auth, new GoogleAuthProvider());
+        alert("Login Successful!");
+      }catch(e){ showError(e.message); }
     });
 
+    // EMAIL LOGIN UI
+    $("emailOption").onclick = ()=>{
+      $("loginCard").classList.add("hidden");
+      $("emailCard").classList.remove("hidden");
+    }
+
+    // EMAIL LOGIN
+    $("emailLoginBtn").onclick = async ()=>{
+      try{
+        await signInWithEmailAndPassword(auth, $("email").value, $("password").value);
+        alert("Login Successful!");
+      }catch(e){ showError(e.message); }
+    }
+
+    // SIGNUP
+    $("showSignup").onclick = ()=>{
+      $("loginCard").classList.add("hidden");
+      $("signupCard").classList.remove("hidden");
+    }
+
+    $("signupBtn").onclick = async ()=>{
+      try{
+        const r = await createUserWithEmailAndPassword(auth, $("semail").value, $("spassword").value);
+        updateProfile(r.user, { displayName: $("sname").value });
+        alert("Signup Done!");
+      }catch(e){ showError(e.message); }
+    }
   </script>
 
 </body>
