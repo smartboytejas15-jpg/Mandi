@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KisanConnect — Login</title>
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+      background:#fafafa;color:#262626;
+      display:flex;align-items:center;justify-content:center;padding:20px;height:100vh;
+    }
+    .card{
+      width:100%;max-width:380px;background:#fff;border:1px solid #dbdbdb;
+      border-radius:8px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.04)
+    }
+    .logo{
+      font-family: 'Pacifico', cursive;
+      font-size:36px;text-align:center;margin-bottom:18px
+    }
+    .sub{color:#8e8e8e;text-align:center;font-size:14px;margin-bottom:18px}
+    input{
+      width:100%;padding:10px 12px;border-radius:4px;border:1px solid #dbdbdb;
+      background:#fafafa;font-size:14px;margin-bottom:10px
+    }
+    .btn{
+      padding:10px;border-radius:4px;border:0;background:#3897f0;
+      color:white;font-weight:600;cursor:pointer;margin-top:5px;width:100%;
+    }
+    .fb{color:#385185;font-weight:600;text-align:center;margin:10px 0;cursor:pointer}
+    .small{text-align:center;color:#8e8e8e;font-size:13px;margin-top:10px}
+    .or{
+      display:flex;align-items:center;margin:14px 0;color:#8e8e8e;font-size:13px
+    }
+    .or::before,.or::after{
+      content:"";flex:1;height:1px;background:#dbdbdb;margin:0 10px
+    }
+    .hidden{display:none}
+    .error{color:#e74c3c;text-align:center;font-size:13px;margin-bottom:10px}
+    a{color:#00376b;text-decoration:none}
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <div class="card" id="loginCard">
+    <div class="logo">KisanConnect</div>
+    <div class="sub">Login to manage your mandi rates and listings</div>
+
+    <div id="error" class="error hidden"></div>
+
+    <!-- EMAIL LOGIN -->
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="emailLoginBtn" class="btn">Log In</button>
+
+    <div class="or"><span>OR</span></div>
+
+    <!-- Google button kept visually same (big and clear) -->
+    <div id="googleBtn" class="fb" style="font-size:16px;">Continue with Google</div>
+
+    <div class="signup small">
+      Don’t have an account? <a href="#" id="showSignup">Sign up</a>
+    </div>
+  </div>
+
+  <!-- SIGNUP -->
+  <div class="card hidden" id="signupCard">
+    <div class="sub">Create account</div>
+    <div id="sError" class="error hidden"></div>
+
+    <input id="sname" placeholder="Full Name" />
+    <input id="semail" type="email" placeholder="Email" />
+    <input id="spassword" type="password" placeholder="Password (6+ chars)" />
+    <button id="signupBtn" class="btn">Sign Up</button>
+
+    <div style="text-align:center;margin-top:8px">
+      <a href="#" id="backToLogin">Back to login</a>
+    </div>
+  </div>
+
+  <!-- Firebase (modular v12) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      GoogleAuthProvider,
+      signInWithPopup,
+      sendPasswordResetEmail,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+    // ---------- YOUR FIREBASE CONFIG (as provided) ----------
+    const firebaseConfig = {
+      apiKey: "AIzaSyCNTk8Albrx2RgaBuQ45GNDEiOSDIwSZX4",
+      authDomain: "kisan-922e0.firebaseapp.com",
+      projectId: "kisan-922e0",
+      storageBucket: "kisan-922e0.firebasestorage.app",
+      messagingSenderId: "445867146442",
+      appId: "1:445867146442:web:5ebb15443157b09f370833",
+      measurementId: "G-KLT6QCQFD3"
+    };
+    // --------------------------------------------------------
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const $ = id => document.getElementById(id);
+    function showError(msg, elId="error"){
+      const el = $(elId);
+      if(!el) return;
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      setTimeout(()=>el.classList.add("hidden"),4500);
+    }
+
+    // EMAIL LOGIN
+    $("emailLoginBtn").addEventListener("click", async ()=>{
+      const email = $("email").value.trim();
+      const pass = $("password").value;
+      if(!email || !pass) return showError("Please enter email and password");
+      try{
+        await signInWithEmailAndPassword(auth, email, pass);
+        alert("Login Successful!");
+        // redirect to home (create home.html later)
+        window.location.href = "home.html";
+      }catch(err){
+        showError(err.message || "Login failed");
+      }
+    });
+
+    // SHOW SIGNUP PAGE
+    $("showSignup").addEventListener("click", (e)=>{
+      e.preventDefault();
+      $("loginCard").classList.add("hidden");
+      $("signupCard").classList.remove("hidden");
+    });
+
+    // BACK TO LOGIN from signup
+    $("backToLogin").addEventListener("click", (e)=>{
+      e.preventDefault();
+      $("signupCard").classList.add("hidden");
+      $("loginCard").classList.remove("hidden");
+    });
+
+    // SIGNUP
+    $("signupBtn").addEventListener("click", async ()=>{
+      const name = $("sname").value.trim();
+      const email = $("semail").value.trim();
+      const pass = $("spassword").value;
+      if(!name || !email || !pass) return showError("Please fill all fields", "sError");
+      try{
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(res.user, { displayName: name });
+        alert("Signup successful!");
+        // after signup, go back to login (as you requested)
+        $("signupCard").classList.add("hidden");
+        $("loginCard").classList.remove("hidden");
+      }catch(err){
+        showError(err.message || "Signup failed", "sError");
+      }
+    });
+
+    // GOOGLE SIGN-IN
+    $("googleBtn").addEventListener("click", async ()=>{
+      try{
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        alert("Login Successful!");
+        window.location.href = "home.html";
+      }catch(err){
+        showError(err.message || "Google sign-in failed");
+      }
+    });
+
+    // Optional: Password reset prompt (kept but not visible in UI)
+    // Use console or add UI later
+    // onAuthStateChanged to debug / keep user logged in
+    onAuthStateChanged(auth, user=>{
+      if(user){
+        // user is signed in
+        console.log("User signed in:", user.uid, user.email, user.displayName);
+      } else {
+        console.log("No user signed in");
+      }
+    });
+  </script>
+
+</body>
+</html>
