@@ -1,196 +1,326 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>KisanConnect — Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mandi Rate</title>
 
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;
-      background:#fafafa;color:#262626;
-      display:flex;align-items:center;justify-content:center;padding:20px;height:100vh;
+<!-- Google Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: #f6f8fa;
     }
-    .card{
-      width:100%;max-width:380px;background:#fff;border:1px solid #dbdbdb;
-      border-radius:8px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.04)
+
+    /* Topbar */
+    .topbar {
+        background: white;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
-    .logo{
-      font-family: 'Pacifico', cursive;
-      font-size:36px;text-align:center;margin-bottom:18px
+
+    .left-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 700;
     }
-    .sub{color:#8e8e8e;text-align:center;font-size:14px;margin-bottom:18px}
-    input{
-      width:100%;padding:10px 12px;border-radius:4px;border:1px solid #dbdbdb;
-      background:#fafafa;font-size:14px;margin-bottom:10px
+
+    .left-logo img {
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
     }
-    .btn{
-      padding:10px;border-radius:4px;border:0;background:#3897f0;
-      color:white;font-weight:600;cursor:pointer;margin-top:5px;width:100%;
+
+    .icons {
+        display: flex;
+        gap: 25px;
+        font-size: 26px;
+        color: #333;
+        cursor: pointer;
     }
-    .fb{color:#385185;font-weight:600;text-align:center;margin:10px 0;cursor:pointer}
-    .small{text-align:center;color:#8e8e8e;font-size:13px;margin-top:10px}
-    .or{
-      display:flex;align-items:center;margin:14px 0;color:#8e8e8e;font-size:13px
+
+    /* Search Box */
+    .search-box {
+        background: white;
+        margin: 15px;
+        padding: 12px;
+        border-radius: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
-    .or::before,.or::after{
-      content:"";flex:1;height:1px;background:#dbdbdb;margin:0 10px
+
+    .search-box input {
+        width: 100%;
+        outline: none;
+        border: none;
+        font-size: 16px;
     }
-    .hidden{display:none}
-    .error{color:#e74c3c;text-align:center;font-size:13px;margin-bottom:10px}
-    a{color:#00376b;text-decoration:none}
-  </style>
+
+    /* Cards */
+    .item-card {
+        background: white;
+        margin: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        transition: .3s;
+    }
+
+    .item-card:hover {
+        transform: scale(1.02);
+    }
+
+    .item-card img {
+        width: 75px;
+        height: 75px;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+
+    /* Bottom Bar */
+    .bottombar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 12px 25px;
+        display: flex;
+        justify-content: space-between;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+
+    .b-icon {
+        font-size: 28px;
+        color: #333;
+        cursor: pointer;
+        transition: .3s;
+    }
+
+    .b-icon.active {
+        color: #ff6f00;
+        transform: scale(1.2);
+    }
+
+    /* Notification Box */
+    #notifyBox {
+        position: fixed;
+        top: 70px;
+        right: 15px;
+        background: white;
+        padding: 15px;
+        width: 260px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+        display: none;
+        z-index: 20;
+    }
+
+    /* ADD MENU POPUP */
+    .add-menu {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 40;
+    }
+
+    .add-menu-box {
+        width: 80%;
+        max-width: 350px;
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        text-align: center;
+        animation: popup .3s ease;
+        position: relative;
+    }
+
+    @keyframes popup {
+        from { transform: scale(0.6); opacity: 0; }
+        to   { transform: scale(1); opacity: 1; }
+    }
+
+    .add-option {
+        background: #f1f1f1;
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .add-option:hover {
+        background: #e3e3e3;
+    }
+
+    .close-btn {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        font-size: 28px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+</style>
 </head>
-
 <body>
 
-  <!-- LOGIN -->
-  <div class="card" id="loginCard">
-    <div class="logo">KisanConnect</div>
-    <div class="sub">Login to manage your mandi rates and listings</div>
-
-    <div id="error" class="error hidden"></div>
-
-    <!-- EMAIL LOGIN -->
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <button id="emailLoginBtn" class="btn">Log In</button>
-
-    <div class="or"><span>OR</span></div>
-
-    <!-- Google button kept visually same (big and clear) -->
-    <div id="googleBtn" class="fb" style="font-size:16px;">Continue with Google</div>
-
-    <div class="signup small">
-      Don’t have an account? <a href="#" id="showSignup">Sign up</a>
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="left-logo">
+        <img src="https://i.imgur.com/0Z8FQpO.png" alt="">
+        Mandi Rate
     </div>
-  </div>
 
-  <!-- SIGNUP -->
-  <div class="card hidden" id="signupCard">
-    <div class="sub">Create account</div>
-    <div id="sError" class="error hidden"></div>
-
-    <input id="sname" placeholder="Full Name" />
-    <input id="semail" type="email" placeholder="Email" />
-    <input id="spassword" type="password" placeholder="Password (6+ chars)" />
-    <button id="signupBtn" class="btn">Sign Up</button>
-
-    <div style="text-align:center;margin-top:8px">
-      <a href="#" id="backToLogin">Back to login</a>
+    <div class="icons">
+        <span class="material-icons-outlined" id="bell">notifications</span>
+        <span class="material-icons-outlined" id="settingsBtn">settings</span>
     </div>
-  </div>
+</div>
 
-  <!-- Firebase (modular v12) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      updateProfile,
-      GoogleAuthProvider,
-      signInWithPopup,
-      sendPasswordResetEmail,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+<!-- SEARCH -->
+<div class="search-box">
+    <span class="material-icons-outlined" id="searchIcon">search</span>
+    <input id="searchInput" type="text" placeholder="Search vegetables...">
+</div>
 
-    // ---------- YOUR FIREBASE CONFIG (as provided) ----------
-    const firebaseConfig = {
-      apiKey: "AIzaSyCNTk8Albrx2RgaBuQ45GNDEiOSDIwSZX4",
-      authDomain: "kisan-922e0.firebaseapp.com",
-      projectId: "kisan-922e0",
-      storageBucket: "kisan-922e0.firebasestorage.app",
-      messagingSenderId: "445867146442",
-      appId: "1:445867146442:web:5ebb15443157b09f370833",
-      measurementId: "G-KLT6QCQFD3"
-    };
-    // --------------------------------------------------------
+<!-- ITEMS -->
+<div id="itemList"></div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+<!-- NOTIFICATION POPUP -->
+<div id="notifyBox">
+    <b>Notifications</b>
+    <p style="margin-top: 10px;">No new notifications.</p>
+</div>
 
-    const $ = id => document.getElementById(id);
-    function showError(msg, elId="error"){
-      const el = $(elId);
-      if(!el) return;
-      el.textContent = msg;
-      el.classList.remove("hidden");
-      setTimeout(()=>el.classList.add("hidden"),4500);
+<!-- ADD POPUP MENU -->
+<div id="addMenu" class="add-menu">
+    <div class="add-menu-box">
+        <span class="close-btn">&times;</span>
+        <h2>Create</h2>
+
+        <div class="add-option">📺 Live</div>
+        <div class="add-option">🎥 Video</div>
+        <div class="add-option">📝 Post</div>
+    </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottombar">
+    <span class="material-icons-outlined b-icon active">home</span>
+    <span class="material-icons-outlined b-icon">currency_rupee</span>
+
+    <!-- PLUS BUTTON -->
+    <span class="material-icons-outlined b-icon" id="addBtn" style="font-size:45px;margin-top:-8px;">add_circle</span>
+
+    <span class="material-icons-outlined b-icon">analytics</span>
+    <span class="material-icons-outlined b-icon">account_circle</span>
+</div>
+
+<script>
+/* VEG DATA */
+const items = [
+    { name: "Tomato", price: 20, img: "https://i.imgur.com/0bZ9l6T.jpeg" },
+    { name: "Potato", price: 25, img: "https://i.imgur.com/5h4czE2.jpeg" },
+    { name: "Onion", price: 30, img: "https://i.imgur.com/BVO9Oa3.jpeg" },
+    { name: "Carrot", price: 40, img: "https://i.imgur.com/2B9ju1p.jpeg" }
+];
+
+function loadItems(filter = "") {
+    const list = document.getElementById("itemList");
+    list.innerHTML = "";
+
+    items
+        .filter(i => i.name.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(item => {
+            list.innerHTML += `
+                <div class="item-card">
+                    <img src="${item.img}">
+                    <div>
+                        <h3>${item.name}</h3>
+                        <p>₹${item.price} / kg</p>
+                    </div>
+                </div>
+            `;
+        });
+}
+loadItems();
+
+/* SEARCH */
+document.getElementById("searchInput").addEventListener("input", (e) => {
+    loadItems(e.target.value);
+});
+
+document.getElementById("searchIcon").addEventListener("click", () => {
+    document.getElementById("searchInput").focus();
+});
+
+/* NOTIFICATION */
+const bell = document.getElementById("bell");
+const notifyBox = document.getElementById("notifyBox");
+
+bell.onclick = () => {
+    notifyBox.style.display =
+        notifyBox.style.display === "block" ? "none" : "block";
+};
+
+/* SETTINGS */
+document.getElementById("settingsBtn").onclick = () => {
+    alert("Settings page coming soon!");
+};
+
+/* BOTTOM NAV ACTIVE */
+const navIcons = document.querySelectorAll(".b-icon");
+navIcons.forEach(i => {
+    i.addEventListener("click", function () {
+        navIcons.forEach(x => x.classList.remove("active"));
+        this.classList.add("active");
+    });
+});
+
+/* PLUS BUTTON POPUP */
+const addBtn = document.getElementById("addBtn");
+const addMenu = document.getElementById("addMenu");
+const closeBtn = document.querySelector(".close-btn");
+
+addBtn.onclick = () => {
+    addMenu.style.display = "flex";
+};
+
+closeBtn.onclick = () => {
+    addMenu.style.display = "none";
+};
+
+addMenu.onclick = (e) => {
+    if (e.target === addMenu) {
+        addMenu.style.display = "none";
     }
-
-    // EMAIL LOGIN
-    $("emailLoginBtn").addEventListener("click", async ()=>{
-      const email = $("email").value.trim();
-      const pass = $("password").value;
-      if(!email || !pass) return showError("Please enter email and password");
-      try{
-        await signInWithEmailAndPassword(auth, email, pass);
-        alert("Login Successful!");
-        // redirect to home (create home.html later)
-        window.location.href = "home.html";
-      }catch(err){
-        showError(err.message || "Login failed");
-      }
-    });
-
-    // SHOW SIGNUP PAGE
-    $("showSignup").addEventListener("click", (e)=>{
-      e.preventDefault();
-      $("loginCard").classList.add("hidden");
-      $("signupCard").classList.remove("hidden");
-    });
-
-    // BACK TO LOGIN from signup
-    $("backToLogin").addEventListener("click", (e)=>{
-      e.preventDefault();
-      $("signupCard").classList.add("hidden");
-      $("loginCard").classList.remove("hidden");
-    });
-
-    // SIGNUP
-    $("signupBtn").addEventListener("click", async ()=>{
-      const name = $("sname").value.trim();
-      const email = $("semail").value.trim();
-      const pass = $("spassword").value;
-      if(!name || !email || !pass) return showError("Please fill all fields", "sError");
-      try{
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(res.user, { displayName: name });
-        alert("Signup successful!");
-        // after signup, go back to login (as you requested)
-        $("signupCard").classList.add("hidden");
-        $("loginCard").classList.remove("hidden");
-      }catch(err){
-        showError(err.message || "Signup failed", "sError");
-      }
-    });
-
-    // GOOGLE SIGN-IN
-    $("googleBtn").addEventListener("click", async ()=>{
-      try{
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        alert("Login Successful!");
-        window.location.href = "home.html";
-      }catch(err){
-        showError(err.message || "Google sign-in failed");
-      }
-    });
-
-    // Optional: Password reset prompt (kept but not visible in UI)
-    // Use console or add UI later
-    // onAuthStateChanged to debug / keep user logged in
-    onAuthStateChanged(auth, user=>{
-      if(user){
-        // user is signed in
-        console.log("User signed in:", user.uid, user.email, user.displayName);
-      } else {
-        console.log("No user signed in");
-      }
-    });
-  </script>
+};
+</script>
 
 </body>
 </html>
